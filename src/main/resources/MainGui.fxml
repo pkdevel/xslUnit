@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+
+
+<VBox maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.pkdevel.xslunit.view.MainGuiController">
+   <children>
+      <HBox prefHeight="276.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
+         <children>
+            <TextArea prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" fx:id="xml" />
+            <TextArea prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" fx:id="xsl" />
+         </children>
+      </HBox>
+      <TextArea fx:id="result" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+   </children>
+</VBox>
