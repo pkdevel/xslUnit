@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
@@ -40,11 +42,28 @@ public class MainGuiController implements Initializable {
 	public void initialize(final URL location, final ResourceBundle resources) {
 		this.unit = new XslUnit();
 		
+		/* java 8 lambda expressions
 		this.xml.textProperty().addListener((observable, oldValue, newValue) -> {
 			this.xmlChanged();
 		});
 		this.xsl.textProperty().addListener((observable, oldValue, newValue) -> {
 			this.xslChanged();
+		});
+		*/
+		
+		this.xml.textProperty().addListener(new ChangeListener<String>() {
+			
+			@Override
+			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+				MainGuiController.this.xmlChanged();
+			}
+		});
+		this.xsl.textProperty().addListener(new ChangeListener<String>() {
+			
+			@Override
+			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
+				MainGuiController.this.xslChanged();
+			}
 		});
 	}
 	
