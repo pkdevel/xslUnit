@@ -8,7 +8,7 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 
-public class XslUnitApplication extends Application {
+public final class XslUnitApplication extends Application {
 	
 	public static void main(final String[] args) {
 		if (args.length == 0) {

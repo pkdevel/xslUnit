@@ -11,6 +11,8 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactoryConfigurationException;
@@ -21,7 +23,7 @@ import org.xml.sax.SAXException;
 
 import de.pkdevel.xslunit.XslUnit;
 
-public class MainGuiController implements Initializable {
+public final class MainGuiController implements Initializable {
 	
 	@FXML
 	private TextArea xml;
@@ -69,7 +71,7 @@ public class MainGuiController implements Initializable {
 	
 	public void xmlChanged() {
 		try {
-			this.document = this.unit.parseXml(this.xml.getText());
+			this.document = this.unit.parseDOM(this.xml.getText());
 			this.xslChanged();
 		}
 		catch (ParserConfigurationException | SAXException | IOException e) {
@@ -87,13 +89,35 @@ public class MainGuiController implements Initializable {
 			return;
 		}
 		
+		if (StringUtils.startsWith(this.xsl.getText(), "<")) {
+			this.performXslt();
+		}
+		else {
+			this.performXpath();
+		}
+	}
+	
+	private void performXpath() {
 		try {
-			this.expression = this.unit.createXpath(this.xsl.getText());
-			final String result = this.unit.xpath(this.document, this.expression);
+			this.expression = this.unit.createXPath(this.xsl.getText());
+			final String result = this.unit.xPath(this.document, this.expression);
 			this.result.setText(result);
 		}
 		catch (XPathFactoryConfigurationException | XPathExpressionException e) {
 			this.result.setText("Invalid expression");
+			this.expression = null;
+			e.printStackTrace();
+		}
+	}
+	
+	private void performXslt() {
+		try {
+			final Document xslt = this.unit.parseDOM(this.xsl.getText());
+			final String result = this.unit.transform(this.document, xslt);
+			this.result.setText(result);
+		}
+		catch (ParserConfigurationException | SAXException | IOException | TransformerFactoryConfigurationError | TransformerException e) {
+			this.result.setText("Invalid xslt");
 			this.expression = null;
 			e.printStackTrace();
 		}
