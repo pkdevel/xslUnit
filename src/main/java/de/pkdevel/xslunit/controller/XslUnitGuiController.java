@@ -1,4 +1,4 @@
-package de.pkdevel.xslunit.view;
+package de.pkdevel.xslunit.controller;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +27,7 @@ import org.xml.sax.SAXException;
 
 import de.pkdevel.xslunit.XslUnit;
 
-public final class MainGuiController implements Initializable {
+public final class XslUnitGuiController implements Initializable {
 	
 	@FXML
 	private TextArea xml;
@@ -53,22 +53,22 @@ public final class MainGuiController implements Initializable {
 			
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				MainGuiController.this.xmlChanged();
+				XslUnitGuiController.this.xmlChanged();
 			}
 		});
 		this.xsl.textProperty().addListener(new ChangeListener<String>() {
 			
 			@Override
 			public void changed(final ObservableValue<? extends String> observable, final String oldValue, final String newValue) {
-				MainGuiController.this.xslChanged();
+				XslUnitGuiController.this.xslChanged();
 			}
 		});
 		
 		try {
-			final String xml = FileUtils.readFileToString(new File("src/main/resources/example.xml"), StandardCharsets.UTF_8);
+			final String xml = FileUtils.readFileToString(new File("src/main/resources/META-INF/xslunit/example.xml"), StandardCharsets.UTF_8);
 			this.xml.setText(xml);
 			
-			final String xslt = FileUtils.readFileToString(new File("src/main/resources/example.xslt"), StandardCharsets.UTF_8);
+			final String xslt = FileUtils.readFileToString(new File("src/main/resources/META-INF/xslunit/example.xslt"), StandardCharsets.UTF_8);
 			this.xsl.setText(xslt);
 		}
 		catch (final IOException e) {

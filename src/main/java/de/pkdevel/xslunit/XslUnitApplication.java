@@ -16,7 +16,7 @@ public final class XslUnitApplication extends Application {
 	
 	@Override
 	public void start(final Stage stage) throws Exception {
-		final URL fxml = ClassLoader.getSystemResource("MainGui.fxml");
+		final URL fxml = ClassLoader.getSystemResource("META-INF/view/XslUnitGui.fxml");
 		final Parent root = FXMLLoader.load(fxml);
 		
 		final Scene scene = new Scene(root, 1200, 800);
