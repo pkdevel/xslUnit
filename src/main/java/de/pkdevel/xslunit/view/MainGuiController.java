@@ -50,9 +50,11 @@ public final class MainGuiController implements Initializable {
 		try {
 			final String xml = FileUtils.readFileToString(new File("src/test/resources/example.xml"), StandardCharsets.UTF_8);
 			this.xml.setText(xml);
+			this.xmlChanged();
 			
 			final String xslt = FileUtils.readFileToString(new File("src/test/resources/example.xslt"), StandardCharsets.UTF_8);
 			this.xsl.setText(xslt);
+			this.xslChanged();
 		}
 		catch (final IOException e) {
 			e.printStackTrace();

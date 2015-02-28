@@ -21,18 +21,16 @@
 	</xsl:template>
 
 	<xsl:template match="title">
-		Title:
+		<xsl:text>Title:</xsl:text>
 		<span style="color:#ff0000">
 			<xsl:value-of select="." />
 		</span>
-		<br />
 	</xsl:template>
 
 	<xsl:template match="artist">
-		Artist:
+		<xsl:text>Artist:</xsl:text>
 		<span style="color:#00ff00">
 			<xsl:value-of select="." />
 		</span>
-		<br />
 	</xsl:template>
 </xsl:stylesheet>

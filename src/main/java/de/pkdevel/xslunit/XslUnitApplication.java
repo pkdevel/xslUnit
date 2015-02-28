@@ -11,9 +11,7 @@ import javafx.stage.Stage;
 public final class XslUnitApplication extends Application {
 	
 	public static void main(final String[] args) {
-		if (args.length == 0) {
-			launch(args);
-		}
+		launch(args);
 	}
 	
 	@Override
@@ -21,7 +19,7 @@ public final class XslUnitApplication extends Application {
 		final URL fxml = ClassLoader.getSystemResource("MainGui.fxml");
 		final Parent root = FXMLLoader.load(fxml);
 		
-		final Scene scene = new Scene(root, 800, 480);
+		final Scene scene = new Scene(root, 1200, 800);
 		stage.setTitle("XSL Unit");
 		stage.setScene(scene);
 		stage.show();
