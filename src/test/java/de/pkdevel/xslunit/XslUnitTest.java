@@ -11,6 +11,8 @@ import javax.xml.xpath.XPathExpression;
 import org.apache.commons.io.FileUtils;
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.BlockJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -18,7 +20,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import static org.junit.Assert.assertEquals;
 
-public class XslUnitTests {
+@RunWith(BlockJUnit4ClassRunner.class)
+public final class XslUnitTest {
 	
 	private XslUnit unit;
 	
@@ -57,7 +60,7 @@ public class XslUnitTests {
 	}
 	
 	private Document readDOM(final String filename) throws IOException, ParserConfigurationException, SAXException {
-		final String data = FileUtils.readFileToString(new File("src/main/resources/" + filename), StandardCharsets.UTF_8);
+		final String data = FileUtils.readFileToString(new File("src/main/resources/META-INF/xslunit/" + filename), StandardCharsets.UTF_8);
 		
 		return this.unit.parseDOM(data);
 	}
