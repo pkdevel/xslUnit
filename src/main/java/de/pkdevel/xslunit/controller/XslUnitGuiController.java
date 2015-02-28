@@ -22,12 +22,16 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
 import de.pkdevel.xslunit.XslUnit;
 
 public final class XslUnitGuiController implements Initializable {
+	
+	private static final Logger LOGGER = LoggerFactory.getLogger(XslUnitGuiController.class);
 	
 	@FXML
 	private TextArea xml;
@@ -49,6 +53,7 @@ public final class XslUnitGuiController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		this.unit = new XslUnit();
+		
 		this.xml.textProperty().addListener(new ChangeListener<String>() {
 			
 			@Override
@@ -72,7 +77,7 @@ public final class XslUnitGuiController implements Initializable {
 			this.xsl.setText(xslt);
 		}
 		catch (final IOException e) {
-			e.printStackTrace();
+			logError(e);
 		}
 	}
 	
@@ -85,7 +90,7 @@ public final class XslUnitGuiController implements Initializable {
 		}
 		catch (ParserConfigurationException | SAXException | IOException e) {
 			this.result.setText("Invalid XML: " + e.getMessage());
-			e.printStackTrace();
+			logError(e);
 		}
 	}
 	
@@ -101,7 +106,7 @@ public final class XslUnitGuiController implements Initializable {
 			}
 			catch (ParserConfigurationException | SAXException | IOException | TransformerFactoryConfigurationError | TransformerException e) {
 				this.result.setText("Invalid xslt: " + e.getMessage());
-				e.printStackTrace();
+				logError(e);
 			}
 		}
 		else {
@@ -111,7 +116,7 @@ public final class XslUnitGuiController implements Initializable {
 			}
 			catch (XPathFactoryConfigurationException | XPathExpressionException e) {
 				this.result.setText("Invalid XPath expression: " + e.getMessage());
-				e.printStackTrace();
+				logError(e);
 			}
 		}
 	}
@@ -135,7 +140,7 @@ public final class XslUnitGuiController implements Initializable {
 		}
 		catch (final XPathExpressionException e) {
 			this.result.setText("Error on xpath evaluation: " + e.getMessage());
-			e.printStackTrace();
+			logError(e);
 		}
 	}
 	
@@ -146,8 +151,16 @@ public final class XslUnitGuiController implements Initializable {
 		}
 		catch (TransformerFactoryConfigurationError | TransformerException e) {
 			this.result.setText("Error performing transformation: " + e.getMessage());
-			e.printStackTrace();
+			logError(e);
 		}
 	}
 	
+	private static void logError(final Throwable t) {
+		if (LOGGER.isDebugEnabled()) {
+			LOGGER.error(t.getMessage(), t);
+		}
+		else {
+			LOGGER.error(t.getMessage());
+		}
+	}
 }

@@ -8,10 +8,10 @@
    <children>
       <HBox prefHeight="276.0" prefWidth="600.0" VBox.vgrow="ALWAYS">
          <children>
-            <TextArea prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" fx:id="xml" />
-            <TextArea prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" fx:id="xsl" />
+            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="XML" HBox.hgrow="ALWAYS" fx:id="xml" />
+            <TextArea prefHeight="200.0" prefWidth="200.0" promptText="XSL/XPath" HBox.hgrow="ALWAYS" fx:id="xsl" />
          </children>
       </HBox>
-      <TextArea fx:id="result" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+      <TextArea fx:id="result" editable="false" prefHeight="200.0" prefWidth="200.0" promptText="Result" VBox.vgrow="ALWAYS" />
    </children>
 </VBox>
