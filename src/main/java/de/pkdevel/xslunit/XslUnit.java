@@ -53,15 +53,14 @@ public final class XslUnit {
 	public String transform(final Document document, final Document xslt) throws TransformerFactoryConfigurationError, TransformerException {
 		final TransformerFactory transformerFactory = TransformerFactory.newInstance();
 		
-		final DOMSource xmlSource = new DOMSource(document);
-		final Transformer transformer = transformerFactory.newTransformer(xmlSource);
-		
 		final DOMSource xsltSource = new DOMSource(xslt);
+		final Transformer transformer = transformerFactory.newTransformer(xsltSource);
 		
 		final StringWriter result = new StringWriter();
 		final StreamResult streamResult = new StreamResult(result);
 		
-		transformer.transform(xsltSource, streamResult);
+		final DOMSource xmlSource = new DOMSource(document);
+		transformer.transform(xmlSource, streamResult);
 		
 		return result.toString();
 	}

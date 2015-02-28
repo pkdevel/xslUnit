@@ -1,7 +1,9 @@
 package de.pkdevel.xslunit.view;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
 
 import javafx.beans.value.ChangeListener;
@@ -17,6 +19,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
@@ -43,6 +46,17 @@ public final class MainGuiController implements Initializable {
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		this.unit = new XslUnit();
+		
+		try {
+			final String xml = FileUtils.readFileToString(new File("src/test/resources/example.xml"), StandardCharsets.UTF_8);
+			this.xml.setText(xml);
+			
+			final String xslt = FileUtils.readFileToString(new File("src/test/resources/example.xslt"), StandardCharsets.UTF_8);
+			this.xsl.setText(xslt);
+		}
+		catch (final IOException e) {
+			e.printStackTrace();
+		}
 		
 		/* java 8 lambda expressions
 		this.xml.textProperty().addListener((observable, oldValue, newValue) -> {

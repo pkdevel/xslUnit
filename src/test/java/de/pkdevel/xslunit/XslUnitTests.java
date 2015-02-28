@@ -1,8 +1,5 @@
 package de.pkdevel.xslunit;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertEquals;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -15,6 +12,10 @@ import org.junit.Before;
 import org.junit.Test;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
+
+import static org.assertj.core.api.Assertions.assertThat;
+
+import static org.junit.Assert.assertEquals;
 
 public class XslUnitTests {
 	
@@ -48,15 +49,15 @@ public class XslUnitTests {
 		final Document xslt = this.readDOM("example.xslt");
 		
 		final String result = this.unit.transform(xml, xslt);
+		final String expected = FileUtils.readFileToString(new File("src/test/resources/result.html"), StandardCharsets.UTF_8);
 		
-		assertEquals("A Sample Article", result);
+		assertEquals(expected, result);
 	}
 	
 	private Document readDOM(final String filename) throws IOException, ParserConfigurationException, SAXException {
 		final String data = FileUtils.readFileToString(new File("src/test/resources/" + filename), StandardCharsets.UTF_8);
 		
-		final Document document = this.unit.parseDOM(data);
-		return document;
+		return this.unit.parseDOM(data);
 	}
 	
 }
