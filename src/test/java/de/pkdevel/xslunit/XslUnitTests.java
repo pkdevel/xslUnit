@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.xpath.XPathExpression;
 
 import org.apache.commons.io.FileUtils;
@@ -47,15 +48,16 @@ public class XslUnitTests {
 	public void testTransform() throws Exception {
 		final Document xml = this.readDOM("example.xml");
 		final Document xslt = this.readDOM("example.xslt");
+		final Transformer transformer = this.unit.createTransformer(xslt);
 		
-		final String result = this.unit.transform(xml, xslt);
+		final String result = this.unit.transform(xml, transformer);
 		final String expected = FileUtils.readFileToString(new File("src/test/resources/result.html"), StandardCharsets.UTF_8);
 		
 		assertEquals(expected, result);
 	}
 	
 	private Document readDOM(final String filename) throws IOException, ParserConfigurationException, SAXException {
-		final String data = FileUtils.readFileToString(new File("src/test/resources/" + filename), StandardCharsets.UTF_8);
+		final String data = FileUtils.readFileToString(new File("src/main/resources/" + filename), StandardCharsets.UTF_8);
 		
 		return this.unit.parseDOM(data);
 	}

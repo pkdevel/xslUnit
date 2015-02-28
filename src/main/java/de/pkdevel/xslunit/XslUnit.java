@@ -24,6 +24,7 @@ import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import net.sf.saxon.om.NamespaceConstant;
 
+import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
@@ -36,8 +37,11 @@ public final class XslUnit {
 	}
 	
 	public Document parseDOM(final String xml) throws ParserConfigurationException, SAXException, IOException {
-		final DocumentBuilder documentBuilder = createDocumentBuilder();
+		if (StringUtils.isEmpty(xml)) {
+			return null;
+		}
 		
+		final DocumentBuilder documentBuilder = createDocumentBuilder();
 		final InputStream xmlReader = new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8));
 		
 		return documentBuilder.parse(xmlReader);
@@ -50,22 +54,35 @@ public final class XslUnit {
 		return documentBuilderFactory.newDocumentBuilder();
 	}
 	
-	public String transform(final Document document, final Document xslt) throws TransformerFactoryConfigurationError, TransformerException {
-		final TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		
-		final DOMSource xsltSource = new DOMSource(xslt);
-		final Transformer transformer = transformerFactory.newTransformer(xsltSource);
+	public String transform(final Document document, final Transformer transformer) throws TransformerFactoryConfigurationError, TransformerException {
+		if (document == null || transformer == null) {
+			return null;
+		}
 		
 		final StringWriter result = new StringWriter();
 		final StreamResult streamResult = new StreamResult(result);
-		
 		final DOMSource xmlSource = new DOMSource(document);
 		transformer.transform(xmlSource, streamResult);
 		
 		return result.toString();
 	}
 	
+	public Transformer createTransformer(final Document xslt) throws TransformerFactoryConfigurationError, TransformerException {
+		if (xslt == null) {
+			return null;
+		}
+		
+		final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		final DOMSource xsltSource = new DOMSource(xslt);
+		
+		return transformerFactory.newTransformer(xsltSource);
+	}
+	
 	public XPathExpression createXPath(final String xPathExpression) throws XPathFactoryConfigurationException, XPathExpressionException {
+		if (StringUtils.isEmpty(xPathExpression)) {
+			return null;
+		}
+		
 		final XPathFactory factory = XPathFactory.newInstance(NamespaceConstant.OBJECT_MODEL_SAXON);
 		final XPath xPath = factory.newXPath();
 		
@@ -73,6 +90,10 @@ public final class XslUnit {
 	}
 	
 	public String xPath(final Document document, final XPathExpression xPathExpression) throws XPathExpressionException {
+		if (document == null || xPathExpression == null) {
+			return null;
+		}
+		
 		return (String) xPathExpression.evaluate(document, XPathConstants.STRING);
 	}
 	

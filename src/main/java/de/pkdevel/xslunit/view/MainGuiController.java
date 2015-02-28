@@ -13,6 +13,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.TextArea;
 
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPathExpression;
@@ -43,32 +44,11 @@ public final class MainGuiController implements Initializable {
 	
 	private XPathExpression expression;
 	
+	private Transformer transformer;
+	
 	@Override
 	public void initialize(final URL location, final ResourceBundle resources) {
 		this.unit = new XslUnit();
-		
-		try {
-			final String xml = FileUtils.readFileToString(new File("src/test/resources/example.xml"), StandardCharsets.UTF_8);
-			this.xml.setText(xml);
-			this.xmlChanged();
-			
-			final String xslt = FileUtils.readFileToString(new File("src/test/resources/example.xslt"), StandardCharsets.UTF_8);
-			this.xsl.setText(xslt);
-			this.xslChanged();
-		}
-		catch (final IOException e) {
-			e.printStackTrace();
-		}
-		
-		/* java 8 lambda expressions
-		this.xml.textProperty().addListener((observable, oldValue, newValue) -> {
-			this.xmlChanged();
-		});
-		this.xsl.textProperty().addListener((observable, oldValue, newValue) -> {
-			this.xslChanged();
-		});
-		*/
-		
 		this.xml.textProperty().addListener(new ChangeListener<String>() {
 			
 			@Override
@@ -83,58 +63,89 @@ public final class MainGuiController implements Initializable {
 				MainGuiController.this.xslChanged();
 			}
 		});
+		
+		try {
+			final String xml = FileUtils.readFileToString(new File("src/main/resources/example.xml"), StandardCharsets.UTF_8);
+			this.xml.setText(xml);
+			
+			final String xslt = FileUtils.readFileToString(new File("src/main/resources/example.xslt"), StandardCharsets.UTF_8);
+			this.xsl.setText(xslt);
+		}
+		catch (final IOException e) {
+			e.printStackTrace();
+		}
 	}
 	
 	public void xmlChanged() {
+		this.document = null;
+		
 		try {
 			this.document = this.unit.parseDOM(this.xml.getText());
-			this.xslChanged();
+			this.updateResult();
 		}
 		catch (ParserConfigurationException | SAXException | IOException e) {
-			this.result.setText("Invalid XML");
-			this.document = null;
+			this.result.setText("Invalid XML: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
 	public void xslChanged() {
-		if (this.document == null) {
-			return;
-		}
-		if (StringUtils.isEmpty(this.xsl.getText())) {
-			return;
-		}
+		this.transformer = null;
+		this.expression = null;
 		
 		if (StringUtils.startsWith(this.xsl.getText(), "<")) {
-			this.performXslt();
+			try {
+				final Document xslDOM = this.unit.parseDOM(this.xsl.getText());
+				this.transformer = this.unit.createTransformer(xslDOM);
+				this.updateResult();
+			}
+			catch (ParserConfigurationException | SAXException | IOException | TransformerFactoryConfigurationError | TransformerException e) {
+				this.result.setText("Invalid xslt: " + e.getMessage());
+				e.printStackTrace();
+			}
 		}
 		else {
+			try {
+				this.expression = this.unit.createXPath(this.xsl.getText());
+				this.updateResult();
+			}
+			catch (XPathFactoryConfigurationException | XPathExpressionException e) {
+				this.result.setText("Invalid XPath expression: " + e.getMessage());
+				e.printStackTrace();
+			}
+		}
+	}
+	
+	private void updateResult() {
+		if (this.document == null || (this.expression == null && this.transformer == null)) {
+			this.result.setText(null);
+		}
+		else if (this.expression != null) {
 			this.performXpath();
+		}
+		else if (this.transformer != null) {
+			this.performXslt();
 		}
 	}
 	
 	private void performXpath() {
 		try {
-			this.expression = this.unit.createXPath(this.xsl.getText());
 			final String result = this.unit.xPath(this.document, this.expression);
 			this.result.setText(result);
 		}
-		catch (XPathFactoryConfigurationException | XPathExpressionException e) {
-			this.result.setText("Invalid expression");
-			this.expression = null;
+		catch (final XPathExpressionException e) {
+			this.result.setText("Error on xpath evaluation: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
 	
 	private void performXslt() {
 		try {
-			final Document xslt = this.unit.parseDOM(this.xsl.getText());
-			final String result = this.unit.transform(this.document, xslt);
+			final String result = this.unit.transform(this.document, this.transformer);
 			this.result.setText(result);
 		}
-		catch (ParserConfigurationException | SAXException | IOException | TransformerFactoryConfigurationError | TransformerException e) {
-			this.result.setText("Invalid xslt");
-			this.expression = null;
+		catch (TransformerFactoryConfigurationError | TransformerException e) {
+			this.result.setText("Error performing transformation: " + e.getMessage());
 			e.printStackTrace();
 		}
 	}
