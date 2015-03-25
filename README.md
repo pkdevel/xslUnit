@@ -1,10 +1,5 @@
 # xslUnit
 
-## fixing classpath for javaFX:
-do this as super user
-
-`mvn com.zenjava:javafx-maven-plugin:2.0:fix-classpath`
-
 ## building an executable jar
 `mvn clean jfx:jar`
 
