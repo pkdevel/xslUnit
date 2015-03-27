@@ -26,43 +26,64 @@ public final class XslUnitApplication extends Application {
 	@Override
 	public void start(final Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
+		this.loadFrame();
 		
 		final URL fxml = ClassLoader.getSystemResource("META-INF/view/XslUnitGui.fxml");
 		final Parent root = FXMLLoader.load(fxml);
 		final Scene scene = new Scene(root);
 		
-		final Preferences userPrefs = Preferences.userNodeForPackage(XslUnitApplication.class);
-		final double x = userPrefs.getDouble("stage.x", 100);
-		final double y = userPrefs.getDouble("stage.y", 100);
-		final double width = userPrefs.getDouble("stage.width", 800);
-		final double height = userPrefs.getDouble("stage.height", 600);
-		LOGGER.debug("Found screen prefs: " + x + ":" + y + " " + width + "x" + height);
-		
-		if (Screen.getScreensForRectangle(x, y, width, height).size() != 0) {
-			LOGGER.debug("Screen prefs seem to be legit, taking them into account");
-			this.primaryStage.setX(x);
-			this.primaryStage.setY(y);
-			this.primaryStage.setWidth(width);
-			this.primaryStage.setHeight(height);
-		}
 		this.primaryStage.setScene(scene);
 		this.primaryStage.setTitle("XSL Unit");
 		this.primaryStage.show();
 	}
 	
+	private void loadFrame() {
+		final Preferences userPrefs = Preferences.userNodeForPackage(XslUnitApplication.class);
+		final Frame frame = new Frame(userPrefs.getDouble("stage.x", 100), userPrefs.getDouble("stage.y", 100),
+				userPrefs.getDouble("stage.width", 800), userPrefs.getDouble("stage.height", 600));
+		LOGGER.debug("Found screen prefs: " + frame);
+		
+		if (Screen.getScreensForRectangle(frame.x, frame.y, frame.width, frame.height).size() != 0) {
+			LOGGER.debug("Screen prefs seem to be legit, taking them into account");
+			this.primaryStage.setX(frame.x);
+			this.primaryStage.setY(frame.y);
+			this.primaryStage.setWidth(frame.width);
+			this.primaryStage.setHeight(frame.height);
+		}
+	}
+	
 	@Override
 	public void stop() {
-		final double x = this.primaryStage.getX();
-		final double y = this.primaryStage.getY();
-		final double width = this.primaryStage.getWidth();
-		final double height = this.primaryStage.getHeight();
-		LOGGER.debug("Saving screen prefs: " + x + ":" + y + " " + width + "x" + height);
+		final Frame frame = Frame.fromStage(this.primaryStage);
+		LOGGER.debug("Saving screen prefs: " + frame);
 		
 		final Preferences userPrefs = Preferences.userNodeForPackage(XslUnitApplication.class);
-		userPrefs.putDouble("stage.x", x);
-		userPrefs.putDouble("stage.y", y);
-		userPrefs.putDouble("stage.width", width);
-		userPrefs.putDouble("stage.height", height);
+		userPrefs.putDouble("stage.x", frame.x);
+		userPrefs.putDouble("stage.y", frame.y);
+		userPrefs.putDouble("stage.width", frame.width);
+		userPrefs.putDouble("stage.height", frame.height);
+	}
+	
+	private static final class Frame {
+		
+		final double x, y, width, height;
+		
+		Frame(final double x, final double y, final double width, final double height) {
+			this.x = x;
+			this.y = y;
+			this.width = width;
+			this.height = height;
+		}
+		
+		static Frame fromStage(final Stage stage) {
+			return new Frame(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
+		}
+		
+		@Override
+		public String toString() {
+			return "Frame [x=" + this.x + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + "]";
+		}
+		
 	}
 	
 }

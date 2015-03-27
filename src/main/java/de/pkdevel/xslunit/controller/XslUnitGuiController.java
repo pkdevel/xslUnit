@@ -155,6 +155,30 @@ public final class XslUnitGuiController implements Initializable {
 		}
 	}
 	
+	@FXML
+	public void formatXml() {
+		if (this.document != null)
+			try {
+				this.xml.setText(this.unit.format(this.document));
+			}
+			catch (final TransformerException e) {
+				this.result.setText("Error performing format: " + e.getMessage());
+				logError(e);
+			}
+	}
+	
+	@FXML
+	public void formatXsl() {
+		try {
+			final Document dom = this.unit.parseDOM(this.xsl.getText());
+			this.xsl.setText(this.unit.format(dom));
+		}
+		catch (ParserConfigurationException | SAXException | IOException | TransformerException e) {
+			this.result.setText("Error performing format: " + e.getMessage());
+			logError(e);
+		}
+	}
+	
 	private static void logError(final Throwable t) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.error(t.getMessage(), t);

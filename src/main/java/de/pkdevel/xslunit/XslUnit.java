@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -95,6 +96,17 @@ public final class XslUnit {
 		}
 		
 		return (String) xPathExpression.evaluate(document, XPathConstants.STRING);
+	}
+	
+	public String format(final Document dom) throws TransformerException {
+		final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		
+		final StreamResult result = new StreamResult(new StringWriter());
+		final DOMSource source = new DOMSource(dom);
+		transformer.transform(source, result);
+		
+		return result.getWriter().toString();
 	}
 	
 }
