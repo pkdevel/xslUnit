@@ -13,6 +13,7 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -243,16 +244,21 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 	
 	@FXML
 	public void saveXml() {
-		if (this.xmlFile != null) {
-			this.save(this.xml, this.xmlFile);
-		}
+		this.save(this.xml, this.defaultFile(this.xmlFile));
 	}
 	
 	@FXML
 	public void saveXsl() {
-		if (this.xslFile != null) {
-			this.save(this.xsl, this.xslFile);
+		this.save(this.xsl, this.defaultFile(this.xslFile));
+	}
+	
+	private File defaultFile(final File file) {
+		if (file == null) {
+			final FileChooser fileChooser = new FileChooser();
+			return fileChooser.showSaveDialog(this.screenController.getPrimaryStage());
 		}
+		
+		return file;
 	}
 	
 	private void save(final TextArea text, final File file) {
@@ -288,6 +294,13 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(0)),
 					new KeyValue(other.maxWidthProperty(), Double.valueOf(max)));
 			end = new KeyFrame(new Duration(450),
+					new EventHandler<ActionEvent>() {
+						
+						@Override
+						public void handle(final ActionEvent arg0) {
+							toMax.setMaxWidth(Double.MAX_VALUE);
+						}
+					},
 					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max)),
 					new KeyValue(other.maxWidthProperty(), Double.valueOf(0)));
 		}
@@ -299,14 +312,21 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 			end = new KeyFrame(new Duration(350),
 					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max / 2)),
 					new KeyValue(other.maxWidthProperty(), Double.valueOf(max / 2)),
-					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(maxHeight / 3)));
+					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(maxHeight / 2.5)));
 		}
 		else {
 			start = new KeyFrame(Duration.ZERO,
 					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max / 2)),
 					new KeyValue(other.maxWidthProperty(), Double.valueOf(max / 2)),
-					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(maxHeight / 3)));
+					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(maxHeight / 2.5)));
 			end = new KeyFrame(new Duration(350),
+					new EventHandler<ActionEvent>() {
+						
+						@Override
+						public void handle(final ActionEvent arg0) {
+							toMax.setMaxWidth(Double.MAX_VALUE);
+						}
+					},
 					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max)),
 					new KeyValue(other.maxWidthProperty(), Double.valueOf(0)),
 					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(0)));
