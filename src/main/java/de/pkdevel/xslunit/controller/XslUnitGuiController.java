@@ -2,15 +2,24 @@ package de.pkdevel.xslunit.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ResourceBundle;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.KeyValue;
+import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.Node;
 import javafx.scene.control.TextArea;
+import javafx.stage.FileChooser;
+import javafx.stage.Window;
+import javafx.util.Duration;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
@@ -21,6 +30,7 @@ import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,8 +48,12 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 	@FXML
 	private TextArea xml;
 	
+	private File xmlFile;
+	
 	@FXML
 	private TextArea xsl;
+	
+	private File xslFile;
 	
 	@FXML
 	private TextArea result;
@@ -72,15 +86,23 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 		});
 		
 		try {
-			final String xml = FileUtils.readFileToString(new File("src/main/resources/META-INF/xslunit/example.xml"), StandardCharsets.UTF_8);
+			final String xml = loadResource("example.xml");
 			this.xml.setText(xml);
 			
-			final String xslt = FileUtils.readFileToString(new File("src/main/resources/META-INF/xslunit/example.xslt"), StandardCharsets.UTF_8);
+			final String xslt = loadResource("example.xslt");
 			this.xsl.setText(xslt);
 		}
 		catch (final IOException e) {
 			logError(e);
 		}
+	}
+	
+	private static String loadResource(final String filename) throws IOException {
+		final InputStream resource = ClassLoader.getSystemResourceAsStream("META-INF/xslunit/" + filename);
+		final String result = IOUtils.toString(resource, StandardCharsets.UTF_8);
+		IOUtils.closeQuietly(resource);
+		
+		return result;
 	}
 	
 	@Override
@@ -129,7 +151,7 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 	}
 	
 	private void updateResult() {
-		if (this.document == null || (this.expression == null && this.transformer == null)) {
+		if (this.document == null || this.expression == null && this.transformer == null) {
 			this.result.setText(null);
 		}
 		else if (this.expression != null) {
@@ -164,7 +186,7 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 	
 	@FXML
 	public void formatXml() {
-		if (this.document != null)
+		if (this.document != null) {
 			try {
 				this.xml.setText(this.unit.format(this.document));
 			}
@@ -172,6 +194,7 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 				this.result.setText("Error performing format: " + e.getMessage());
 				logError(e);
 			}
+		}
 	}
 	
 	@FXML
@@ -188,29 +211,109 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 	
 	@FXML
 	public void openXml() {
-		final String xml = this.openFile();
-		if (xml != null) {
-			this.xml.setText(xml);
-		}
+		this.xmlFile = this.openFile(this.xml);
 	}
 	
 	@FXML
 	public void openXsl() {
-		final String xsl = this.openFile();
-		if (xsl != null) {
-			this.xsl.setText(xsl);
+		this.xslFile = this.openFile(this.xsl);
+	}
+	
+	private File openFile(final TextArea text) {
+		final FileChooser fileChooser = new FileChooser();
+		final File file = fileChooser.showOpenDialog(this.screenController.getPrimaryStage());
+		LOGGER.debug("Opening file {}", file);
+		
+		try {
+			final String result = FileUtils.readFileToString(file);
+			try {
+				this.unit.parseDOM(result);
+				text.setText(result);
+				
+				return file;
+			}
+			catch (ParserConfigurationException | SAXException e) {
+				LOGGER.error("File doesn't seem to be a DOM", e);
+			}
+		}
+		catch (final IOException e) {
+		}
+		return null;
+	}
+	
+	@FXML
+	public void saveXml() {
+		if (this.xmlFile != null) {
+			this.save(this.xml, this.xmlFile);
 		}
 	}
 	
-	private String openFile() {
-		final File file = this.screenController.openFileDialog();
+	@FXML
+	public void saveXsl() {
+		if (this.xslFile != null) {
+			this.save(this.xsl, this.xslFile);
+		}
+	}
+	
+	private void save(final TextArea text, final File file) {
 		try {
-			return FileUtils.readFileToString(file);
+			LOGGER.debug("Saving file {}", file);
+			FileUtils.writeStringToFile(file, text.getText(), StandardCharsets.UTF_8, false);
 		}
 		catch (final IOException e) {
-			LOGGER.error("Could not open file", e);
-			return null;
+			logError(e);
 		}
+	}
+	
+	@FXML
+	public void maxXml(final ActionEvent event) {
+		this.maximize(this.xml, this.xsl, event);
+	}
+	
+	@FXML
+	public void maxXsl(final ActionEvent event) {
+		this.maximize(this.xsl, this.xml, event);
+	}
+	
+	private void maximize(final TextArea toMax, final TextArea other, final ActionEvent event) {
+		final Node node = (Node) event.getSource();
+		final Window window = node.getScene().getWindow();
+		
+		final double max = window.getWidth();
+		final double maxHeight = window.getHeight();
+		
+		final KeyFrame start, end;
+		if (toMax.getMaxWidth() == 0) {
+			start = new KeyFrame(Duration.ZERO,
+					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(0)),
+					new KeyValue(other.maxWidthProperty(), Double.valueOf(max)));
+			end = new KeyFrame(new Duration(450),
+					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max)),
+					new KeyValue(other.maxWidthProperty(), Double.valueOf(0)));
+		}
+		else if (other.getMaxWidth() == 0) {
+			start = new KeyFrame(Duration.ZERO,
+					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max)),
+					new KeyValue(other.maxWidthProperty(), Double.valueOf(0)),
+					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(0)));
+			end = new KeyFrame(new Duration(350),
+					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max / 2)),
+					new KeyValue(other.maxWidthProperty(), Double.valueOf(max / 2)),
+					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(maxHeight / 3)));
+		}
+		else {
+			start = new KeyFrame(Duration.ZERO,
+					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max / 2)),
+					new KeyValue(other.maxWidthProperty(), Double.valueOf(max / 2)),
+					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(maxHeight / 3)));
+			end = new KeyFrame(new Duration(350),
+					new KeyValue(toMax.maxWidthProperty(), Double.valueOf(max)),
+					new KeyValue(other.maxWidthProperty(), Double.valueOf(0)),
+					new KeyValue(this.result.maxHeightProperty(), Double.valueOf(0)));
+		}
+		
+		final Timeline fadeIn = new Timeline(start, end);
+		fadeIn.play();
 	}
 	
 	private static void logError(final Throwable t) {

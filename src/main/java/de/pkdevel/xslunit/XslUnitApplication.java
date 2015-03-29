@@ -35,7 +35,7 @@ public final class XslUnitApplication extends Application {
 		this.primaryStage.setTitle("XSL Unit");
 		this.primaryStage.show();
 		
-		screensController.setScreen(Screens.MAIN_RESOURCE);
+		screensController.setScreen(Screens.MAIN);
 	}
 	
 	private void loadFrame() {

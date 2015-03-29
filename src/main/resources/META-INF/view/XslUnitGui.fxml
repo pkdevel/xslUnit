@@ -5,13 +5,21 @@
 <?import java.lang.*?>
 <?import javafx.scene.layout.*?>
 
-<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.pkdevel.xslunit.controller.XslUnitGuiController">
+<VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="438.0" prefWidth="899.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="de.pkdevel.xslunit.controller.XslUnitGuiController">
    <children>
-      <HBox alignment="CENTER_LEFT" prefHeight="40.0" prefWidth="600.0">
+      <HBox alignment="CENTER_LEFT" prefWidth="600.0" spacing="5.0">
          <children>
           <Button mnemonicParsing="false" onAction="#formatXml" text="format" />
             <Button mnemonicParsing="false" onAction="#openXml" text="open file..." />
+            <Button maxHeight="-Infinity" mnemonicParsing="false" onAction="#saveXml" text="save">
+               <HBox.margin>
+                  <Insets />
+               </HBox.margin>
+            </Button>
+            <Button maxHeight="-Infinity" mnemonicParsing="false" onAction="#maxXml" text="maximize" />
             <Region HBox.hgrow="ALWAYS" />
+            <Button maxHeight="-Infinity" mnemonicParsing="false" onAction="#maxXsl" text="maximize" />
+            <Button maxHeight="-Infinity" mnemonicParsing="false" onAction="#saveXsl" text="save" />
             <Button mnemonicParsing="false" onAction="#openXsl" text="open file..." />
             <Button mnemonicParsing="false" onAction="#formatXsl" text="format" />
          </children>
