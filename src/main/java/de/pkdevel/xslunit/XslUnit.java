@@ -101,6 +101,7 @@ public final class XslUnit {
 	public String format(final Document dom) throws TransformerException {
 		final Transformer transformer = TransformerFactory.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 		
 		final StreamResult result = new StreamResult(new StringWriter());
 		final DOMSource source = new DOMSource(dom);

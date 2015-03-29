@@ -29,9 +29,11 @@ import org.xml.sax.SAXException;
 
 import de.pkdevel.xslunit.XslUnit;
 
-public final class XslUnitGuiController implements Initializable {
+public final class XslUnitGuiController implements Initializable, ControlledScreen {
 	
 	private static final Logger LOGGER = LoggerFactory.getLogger(XslUnitGuiController.class);
+	
+	private ScreensController screenController;
 	
 	@FXML
 	private TextArea xml;
@@ -79,6 +81,11 @@ public final class XslUnitGuiController implements Initializable {
 		catch (final IOException e) {
 			logError(e);
 		}
+	}
+	
+	@Override
+	public void setController(final ScreensController screenController) {
+		this.screenController = screenController;
 	}
 	
 	public void xmlChanged() {
@@ -179,6 +186,33 @@ public final class XslUnitGuiController implements Initializable {
 		}
 	}
 	
+	@FXML
+	public void openXml() {
+		final String xml = this.openFile();
+		if (xml != null) {
+			this.xml.setText(xml);
+		}
+	}
+	
+	@FXML
+	public void openXsl() {
+		final String xsl = this.openFile();
+		if (xsl != null) {
+			this.xsl.setText(xsl);
+		}
+	}
+	
+	private String openFile() {
+		final File file = this.screenController.openFileDialog();
+		try {
+			return FileUtils.readFileToString(file);
+		}
+		catch (final IOException e) {
+			LOGGER.error("Could not open file", e);
+			return null;
+		}
+	}
+	
 	private static void logError(final Throwable t) {
 		if (LOGGER.isDebugEnabled()) {
 			LOGGER.error(t.getMessage(), t);
@@ -187,4 +221,5 @@ public final class XslUnitGuiController implements Initializable {
 			LOGGER.error(t.getMessage());
 		}
 	}
+	
 }

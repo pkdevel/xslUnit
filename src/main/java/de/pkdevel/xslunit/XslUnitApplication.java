@@ -1,17 +1,17 @@
 package de.pkdevel.xslunit;
 
-import java.net.URL;
 import java.util.prefs.Preferences;
 
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Screen;
 import javafx.stage.Stage;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import de.pkdevel.xslunit.controller.ScreensController;
+import de.pkdevel.xslunit.controller.ScreensController.Screens;
 
 public final class XslUnitApplication extends Application {
 	
@@ -28,13 +28,14 @@ public final class XslUnitApplication extends Application {
 		this.primaryStage = primaryStage;
 		this.loadFrame();
 		
-		final URL fxml = ClassLoader.getSystemResource("META-INF/view/XslUnitGui.fxml");
-		final Parent root = FXMLLoader.load(fxml);
-		final Scene scene = new Scene(root);
+		final ScreensController screensController = new ScreensController(primaryStage);
+		final Scene scene = new Scene(screensController);
 		
 		this.primaryStage.setScene(scene);
 		this.primaryStage.setTitle("XSL Unit");
 		this.primaryStage.show();
+		
+		screensController.setScreen(Screens.MAIN_RESOURCE);
 	}
 	
 	private void loadFrame() {
