@@ -124,9 +124,9 @@ public final class ScreensController extends StackPane {
 	}
 	
 	private void loadTheme(final String resource) {
-		final URL themeResource = ClassLoader.getSystemResource("META-INF/view/" + THEME_LIGHT);
+		final URL themeResource = ClassLoader.getSystemResource("META-INF/view/" + resource);
 		if (themeResource == null) {
-			LOGGER.error("Could not load resource: " + THEME_LIGHT);
+			LOGGER.error("Could not load resource: " + resource);
 			this.theme = null;
 		}
 		else {
