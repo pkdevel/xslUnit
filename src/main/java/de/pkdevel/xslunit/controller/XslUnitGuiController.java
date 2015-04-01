@@ -99,6 +99,7 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 	}
 	
 	private static String loadResource(final String filename) throws IOException {
+		@SuppressWarnings("resource")
 		final InputStream resource = ClassLoader.getSystemResourceAsStream("META-INF/xslunit/" + filename);
 		final String result = IOUtils.toString(resource, StandardCharsets.UTF_8);
 		IOUtils.closeQuietly(resource);
