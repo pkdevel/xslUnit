@@ -1,5 +1,6 @@
 package de.pkdevel.xslunit;
 
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 
 import javafx.application.Application;
@@ -39,13 +40,12 @@ public final class XslUnitApplication extends Application {
 	}
 	
 	private void loadFrame() {
-		final Preferences userPrefs = Preferences.userNodeForPackage(XslUnitApplication.class);
-		final Frame frame = new Frame(userPrefs.getDouble("stage.x", 100), userPrefs.getDouble("stage.y", 100),
-				userPrefs.getDouble("stage.width", 800), userPrefs.getDouble("stage.height", 600));
-		LOGGER.debug("Found screen prefs: " + frame);
-		
+		final Frame frame = Frame.fromPreferences(Preferences.userNodeForPackage(XslUnitApplication.class));
 		if (Screen.getScreensForRectangle(frame.x, frame.y, frame.width, frame.height).size() != 0) {
-			LOGGER.debug("Screen prefs seem to be legit, taking them into account");
+			if (frame.isDefault()) {
+				LOGGER.debug("Found valid screen prefs: " + frame);
+			}
+			
 			this.primaryStage.setX(frame.x);
 			this.primaryStage.setY(frame.y);
 			this.primaryStage.setWidth(frame.width);
@@ -63,28 +63,13 @@ public final class XslUnitApplication extends Application {
 		userPrefs.putDouble("stage.y", frame.y);
 		userPrefs.putDouble("stage.width", frame.width);
 		userPrefs.putDouble("stage.height", frame.height);
-	}
-	
-	private static final class Frame {
 		
-		final double x, y, width, height;
-		
-		Frame(final double x, final double y, final double width, final double height) {
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
+		try {
+			userPrefs.flush();
 		}
-		
-		static Frame fromStage(final Stage stage) {
-			return new Frame(stage.getX(), stage.getY(), stage.getWidth(), stage.getHeight());
+		catch (final BackingStoreException e) {
+			LOGGER.error("Couldn't flush screen preferences", e);
 		}
-		
-		@Override
-		public String toString() {
-			return "Frame [x=" + this.x + ", y=" + this.y + ", width=" + this.width + ", height=" + this.height + "]";
-		}
-		
 	}
 	
 }

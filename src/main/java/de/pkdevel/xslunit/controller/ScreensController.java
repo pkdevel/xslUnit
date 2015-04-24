@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 public final class ScreensController extends StackPane {
 	
 	public interface Screens {
+		
 		static final String MAIN = "XslUnitGui.fxml";
 	}
 	
@@ -30,6 +31,7 @@ public final class ScreensController extends StackPane {
 	
 	private static final String THEME_LIGHT = "JMetroLightTheme.css";
 	
+	@SuppressWarnings("unused")
 	private static final String THEME_DARK = "JMetroDarkTheme.css";
 	
 	private final Map<String, Node> screens;
