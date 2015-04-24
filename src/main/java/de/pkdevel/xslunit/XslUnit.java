@@ -31,12 +31,6 @@ import org.xml.sax.SAXException;
 
 public final class XslUnit {
 	
-	public XslUnit() {
-		System.setProperty("javax.xml.parsers.DocumentBuilderFactory", "net.sf.saxon.dom.DocumentBuilderFactoryImpl");
-		System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
-		System.setProperty("javax.xml.xpath.XPathFactory:" + NamespaceConstant.OBJECT_MODEL_SAXON, "net.sf.saxon.xpath.XPathFactoryImpl");
-	}
-	
 	public Document parseDOM(final String xml) throws ParserConfigurationException, SAXException, IOException {
 		if (StringUtils.isEmpty(xml)) {
 			return null;
@@ -49,7 +43,7 @@ public final class XslUnit {
 	}
 	
 	private static DocumentBuilder createDocumentBuilder() throws ParserConfigurationException {
-		final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+		final DocumentBuilderFactory documentBuilderFactory = net.sf.saxon.dom.DocumentBuilderFactoryImpl.newInstance();
 		documentBuilderFactory.setNamespaceAware(true);
 		
 		return documentBuilderFactory.newDocumentBuilder();
@@ -73,7 +67,7 @@ public final class XslUnit {
 			return null;
 		}
 		
-		final TransformerFactory transformerFactory = TransformerFactory.newInstance();
+		final TransformerFactory transformerFactory = net.sf.saxon.TransformerFactoryImpl.newInstance();
 		final DOMSource xsltSource = new DOMSource(xslt);
 		
 		return transformerFactory.newTransformer(xsltSource);
@@ -84,7 +78,7 @@ public final class XslUnit {
 			return null;
 		}
 		
-		final XPathFactory factory = XPathFactory.newInstance(NamespaceConstant.OBJECT_MODEL_SAXON);
+		final XPathFactory factory = net.sf.saxon.xpath.XPathFactoryImpl.newInstance(NamespaceConstant.OBJECT_MODEL_SAXON);
 		final XPath xPath = factory.newXPath();
 		
 		return xPath.compile(xPathExpression);
@@ -99,7 +93,7 @@ public final class XslUnit {
 	}
 	
 	public String format(final Document dom) throws TransformerException {
-		final Transformer transformer = TransformerFactory.newInstance().newTransformer();
+		final Transformer transformer = net.sf.saxon.TransformerFactoryImpl.newInstance().newTransformer();
 		transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		transformer.setOutputProperty(OutputKeys.METHOD, "xml");
 		
