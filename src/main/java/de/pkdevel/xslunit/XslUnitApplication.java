@@ -42,7 +42,7 @@ public final class XslUnitApplication extends Application {
 	private void loadFrame() {
 		final Frame frame = Frame.fromPreferences(Preferences.userNodeForPackage(XslUnitApplication.class));
 		if (Screen.getScreensForRectangle(frame.x, frame.y, frame.width, frame.height).size() != 0) {
-			if (frame.isDefault()) {
+			if (!frame.isDefault()) {
 				LOGGER.debug("Found valid screen prefs: " + frame);
 			}
 			
