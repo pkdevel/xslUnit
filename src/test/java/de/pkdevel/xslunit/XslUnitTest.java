@@ -1,5 +1,8 @@
 package de.pkdevel.xslunit;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.Assert.assertEquals;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -16,10 +19,6 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.w3c.dom.Document;
 import org.xml.sax.SAXException;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
-import static org.junit.Assert.assertEquals;
-
 @RunWith(BlockJUnit4ClassRunner.class)
 public final class XslUnitTest {
 	
@@ -35,7 +34,6 @@ public final class XslUnitTest {
 		final Document xml = this.readDOM("example.xml");
 		
 		assertThat(xml).isNotNull();
-		assertThat(xml.toString()).startsWith("net.sf.saxon.dom.DocumentOverNodeInfo");
 	}
 	
 	@Test

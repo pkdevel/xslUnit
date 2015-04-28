@@ -25,10 +25,8 @@ import javafx.util.Duration;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactoryConfigurationException;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -135,7 +133,7 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 				this.transformer = this.unit.createTransformer(xslDOM);
 				this.updateResult();
 			}
-			catch (ParserConfigurationException | SAXException | IOException | TransformerFactoryConfigurationError | TransformerException e) {
+			catch (final ParserConfigurationException | SAXException | IOException | TransformerException e) {
 				this.result.setText("Invalid xslt: " + e.getMessage());
 				logError(e);
 			}
@@ -145,7 +143,7 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 				this.expression = this.unit.createXPath(this.xsl.getText());
 				this.updateResult();
 			}
-			catch (XPathFactoryConfigurationException | XPathExpressionException e) {
+			catch (final XPathExpressionException e) {
 				this.result.setText("Invalid XPath expression: " + e.getMessage());
 				logError(e);
 			}
@@ -180,7 +178,7 @@ public final class XslUnitGuiController implements Initializable, ControlledScre
 			final String result = this.unit.transform(this.document, this.transformer);
 			this.result.setText(result);
 		}
-		catch (TransformerFactoryConfigurationError | TransformerException e) {
+		catch (final TransformerException e) {
 			this.result.setText("Error performing transformation: " + e.getMessage());
 			logError(e);
 		}

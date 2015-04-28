@@ -13,7 +13,6 @@ import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.xpath.XPath;
@@ -21,9 +20,6 @@ import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import javax.xml.xpath.XPathFactoryConfigurationException;
-
-import net.sf.saxon.om.NamespaceConstant;
 
 import org.apache.commons.lang3.StringUtils;
 import org.w3c.dom.Document;
@@ -49,7 +45,7 @@ public final class XslUnit {
 		return documentBuilderFactory.newDocumentBuilder();
 	}
 	
-	public String transform(final Document document, final Transformer transformer) throws TransformerFactoryConfigurationError, TransformerException {
+	public String transform(final Document document, final Transformer transformer) throws TransformerException {
 		if (document == null || transformer == null) {
 			return null;
 		}
@@ -62,7 +58,7 @@ public final class XslUnit {
 		return result.toString();
 	}
 	
-	public Transformer createTransformer(final Document xslt) throws TransformerFactoryConfigurationError, TransformerException {
+	public Transformer createTransformer(final Document xslt) throws TransformerException {
 		if (xslt == null) {
 			return null;
 		}
@@ -73,12 +69,12 @@ public final class XslUnit {
 		return transformerFactory.newTransformer(xsltSource);
 	}
 	
-	public XPathExpression createXPath(final String xPathExpression) throws XPathFactoryConfigurationException, XPathExpressionException {
+	public XPathExpression createXPath(final String xPathExpression) throws XPathExpressionException {
 		if (StringUtils.isEmpty(xPathExpression)) {
 			return null;
 		}
 		
-		final XPathFactory factory = net.sf.saxon.xpath.XPathFactoryImpl.newInstance(NamespaceConstant.OBJECT_MODEL_SAXON);
+		final XPathFactory factory = net.sf.saxon.xpath.XPathFactoryImpl.newInstance();
 		final XPath xPath = factory.newXPath();
 		
 		return xPath.compile(xPathExpression);
